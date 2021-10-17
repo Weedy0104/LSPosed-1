@@ -140,23 +140,6 @@ namespace zygisk {
         // your module's onCompanionRequest(int). Returns -1 if the connection attempt failed.
         int connectCompanion();
 
-        // Force Magisk's denylist unmount routines to run on this process.
-        //
-        // This API only works in preAppSpecialize.
-        //
-        // Processes added to Magisk's denylist will have all Magisk and its modules' files unmounted
-        // from its mount namespace. In addition, all Zygisk code will be unloaded from memory, which
-        // also implies that no Zygisk modules (including yours) are loaded.
-        //
-        // However, if for any reason your module still wants the unmount part of the denylist
-        // operation to be enabled EVEN IF THE PROCESS IS NOT ON THE DENYLIST, call this function.
-        // No code will be unloaded from memory (including your module) because there is no way to
-        // guarantee no crashes will occur.
-        //
-        // The unmounting does not happen immediately after the function is called. It is actually
-        // done during app process specialization.
-        void forceDenyListUnmount();
-
         // Hook JNI native methods for a class
         //
         // Lookup all registered JNI native methods and replace it with your own functions.
@@ -239,7 +222,6 @@ void zygisk_companion_entry(int client) { func(client); }
 
             // Zygisk functions
             int  (*connectCompanion)(void * /* _this */);
-            void (*forceDenyListUnmount)(void * /* _this */);
         };
 
         template <class T>
@@ -256,9 +238,6 @@ void zygisk_companion_entry(int client) { func(client); }
 
     int Api::connectCompanion() {
         return impl->connectCompanion(impl->_this);
-    }
-    void Api::forceDenyListUnmount() {
-        impl->forceDenyListUnmount(impl->_this);
     }
     void Api::hookJniNativeMethods(JNIEnv *env, const char *className, JNINativeMethod *methods, int numMethods) {
         impl->hookJniNativeMethods(env, className, methods, numMethods);

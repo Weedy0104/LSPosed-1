@@ -75,6 +75,4 @@ interface ILSPManagerService {
     oneway void flashZip(String zipPath, in ParcelFileDescriptor outputStream) = 39;
 
     boolean performDexOptMode(String packageName) = 40;
-
-    List<String> getDenyListPackages() = 41;
 }
